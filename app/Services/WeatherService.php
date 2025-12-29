@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Domain\Weather;
-use App\Services\Weather\OpenWeatherClient;
+use App\Services\OpenWeatherClient;
 use Illuminate\Support\Facades\Cache;
 
 class WeatherService {

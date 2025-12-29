@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Weather;
+namespace App\Services;
 
 use App\Domain\Weather;
 use App\Exceptions\CityNotFoundException;
@@ -17,7 +17,7 @@ class OpenWeatherClient {
                 ->get(
                     config('app.openweather.base_url') . '/weather',
                     [
-                        'q'     => $city,
+                        'q' => $city,
                         'appid' => config('app.openweather.key'),
                         'units' => config('app.openweather.units'),
                     ]

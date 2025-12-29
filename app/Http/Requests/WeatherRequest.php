@@ -18,10 +18,12 @@ class WeatherRequest extends FormRequest
     {
         $city = $this->route('city');
 
-        if (\is_string($city)) {
-            $city = \trim($city);
-            $city = \preg_replace('/\s+/', ' ', $city);
-            $city = \strip_tags($city);
+        if (is_string($city)) {
+            $city = trim($city);
+            $city = strip_tags($city);
+            $city = preg_replace('/\s+/', ' ', $city);
+            $city = str_replace('-', ' ', $city);
+            $city = mb_convert_case($city, MB_CASE_TITLE, 'UTF-8');
         }
 
         $this->merge([
