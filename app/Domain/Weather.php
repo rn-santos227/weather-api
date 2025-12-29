@@ -3,8 +3,7 @@ namespace App\Domain;
 
 use Carbon\CarbonImmutable;
 
-final class Weather
-{
+final class Weather {
     public function __construct(
         public readonly string $city,
         public readonly float $temperature,
@@ -12,8 +11,7 @@ final class Weather
         public readonly CarbonImmutable $timestamp
     ) {}
 
-    public function toArray(string $source): array
-    {
+    public function toArray(string $source): array {
         return [
             'city' => $this->city,
             'temperature' => $this->temperature,
