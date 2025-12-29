@@ -14,6 +14,21 @@ class WeatherRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $city = $this->route('city');
+
+        if (\is_string($city)) {
+            $city = \trim($city);
+            $city = \preg_replace('/\s+/', ' ', $city);
+            $city = \strip_tags($city);
+        }
+
+        $this->merge([
+            'city' => $city,
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
