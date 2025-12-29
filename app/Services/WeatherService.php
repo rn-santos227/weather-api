@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Domain\Weather;
 use App\Services\Weather\OpenWeatherClient;
-use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Cache;
 
 class WeatherService {
