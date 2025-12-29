@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+
 use App\Services\OpenWeatherClient;
 use App\Domain\Weather;
 use Carbon\CarbonImmutable;
@@ -25,7 +27,7 @@ class WeatherRequestTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_accepts_a_city_with_spaces() {
         $this->mockWeatherClient('New York');
 
@@ -38,7 +40,7 @@ class WeatherRequestTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_accepts_a_hyphenated_city() {
         $this->mockWeatherClient('New York');
 
@@ -51,7 +53,7 @@ class WeatherRequestTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_city_with_numbers() {
         $response = $this->getJson('/api/weather/New-York123');
 
@@ -59,7 +61,7 @@ class WeatherRequestTest extends TestCase
         $response->assertJsonValidationErrors('city');
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_city_with_special_characters() {
         $response = $this->getJson('/api/weather/New@York');
 
@@ -67,14 +69,14 @@ class WeatherRequestTest extends TestCase
         $response->assertJsonValidationErrors('city');
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_missing_city() {
         $response = $this->getJson('/api/weather/');
 
         $response->assertStatus(404);
     }
 
-    /** @test */
+    #[Test]
     public function it_trims_and_normalizes_city_name() {
         $this->mockWeatherClient('New York');
 
