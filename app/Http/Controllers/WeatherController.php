@@ -13,6 +13,7 @@ class WeatherController extends Controller
     ) {}
 
     public function live(WeatherRequest $request, string $city): JsonResponse {
+        $city = $request->validated()['city'];
         return response()->json(
             $this->weatherService
                 ->getLiveWeather($city)
@@ -21,6 +22,7 @@ class WeatherController extends Controller
     }
 
     public function cached(WeatherRequest $request, string $city): JsonResponse {
+        $city = $request->validated()['city'];
         $result = $this->weatherService->getCachedWeather($city);
 
         return response()->json(
