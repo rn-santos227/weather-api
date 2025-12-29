@@ -123,4 +123,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | OpenWeather Configuration
+    |--------------------------------------------------------------------------
+    */
+
+    'openweather' => [
+        'key' => env('OPENWEATHER_API_KEY'),
+        'base_url' => env('OPENWEATHER_BASE_URL', 'https://api.openweathermap.org/data/2.5'),
+        'units' => env('OPENWEATHER_UNITS', 'metric'),
+        'timeout' => 5,
+    ],
 ];
