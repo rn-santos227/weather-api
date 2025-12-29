@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions\Weather;
+namespace App\Exceptions;
 
 use RuntimeException;
 
