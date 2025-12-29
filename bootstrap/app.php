@@ -1,5 +1,7 @@
 <?php
 
+use App\Exceptions\CityNotFoundException;
+use App\Exceptions\WeatherProviderUnavailableException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,5 +17,17 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(
+            fn (CityNotFoundException $e) => response()->json([
+                'message' => 'City not found',
+                'code' => 'WEATHER_CITY_NOT_FOUND',
+            ], 404)
+        );
+
+        $exceptions->render(
+            fn (WeatherProviderUnavailableException $e) => response()->json([
+                'message' => 'Weather service unavailable',
+                'code' => 'WEATHER_PROVIDER_UNAVAILABLE',
+            ], 503)
+        );
     })->create();
