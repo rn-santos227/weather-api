@@ -5,6 +5,7 @@ use App\Exceptions\WeatherProviderUnavailableException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Validation\ValidationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -29,5 +30,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => 'Weather service unavailable',
                 'code' => 'WEATHER_PROVIDER_UNAVAILABLE',
             ], 503)
+        );
+
+        $exceptions->render(
+            fn (ValidationException $e) => response()->json([
+                'message' => 'Invalid request',
+                'errors' => $e->errors(),
+                'code' => 'VALIDATION_ERROR',
+            ], 422)
         );
     })->create();
