@@ -1,59 +1,227 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Weather API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Overview
 
-## About Laravel
+This project is a simple Weather API built using **Laravel 11+** and **PHP 8+** as part of a PHP Developer take-home exam.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The API accepts a city name, retrieves current weather data from an external provider, and optionally serves cached results to reduce repeated external requests. Basic validation, error handling, and automated tests are included.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
+- PHP 8.1 or higher
+- Laravel 11 or higher
+- Composer
+- SQLite (default) or any Laravel-supported database
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Learning Laravel
+## Dependencies
+- predis/predis 3.3 or higher
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Setup Instructions
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 1. Clone the repository
 
-## Laravel Sponsors
+```bash
+git clone <repository-url>
+cd weather-api
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 2. Install dependencies
 
-### Premium Partners
+```bash
+composer install
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 3. Environment configuration
 
-## Contributing
+Create the environment file:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+cp .env.example .env
+```
 
-## Code of Conduct
+Generate the application key:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan key:generate
+```
 
-## Security Vulnerabilities
+Ensure the SQLite database file exists:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+touch database/database.sqlite
+```
 
-## License
+Update the database configuration in `.env` if necessary:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```env
+DB_CONNECTION=sqlite
+DB_DATABASE=/absolute/path/to/database/database.sqlite
+```
+
+---
+
+### 4. Configure OpenWeather API access
+
+This application uses the **OpenWeather API** as the external weather data provider.
+
+Add your API key to the `.env` file:
+
+```env
+OPENWEATHER_API_KEY=your_openweather_api_key_here
+```
+
+The following defaults are already provided and can be adjusted if needed:
+
+```env
+OPENWEATHER_BASE_URL=https://api.openweathermap.org/data/2.5
+OPENWEATHER_UNITS=metric
+```
+
+You can obtain an API key by creating a free account at:
+
+```
+https://openweathermap.org/api
+```
+
+---
+
+### 5. Run migrations
+
+```bash
+php artisan migrate
+```
+
+### 6. Start the application
+
+```bash
+php artisan serve
+```
+
+The API will be available at:
+
+```
+http://localhost:8000
+```
+
+---
+
+## API Endpoints
+
+### Health Check
+
+```
+GET /api/health
+```
+
+Response:
+
+```json
+{
+  "status": "ok"
+}
+```
+
+---
+
+### Live Weather
+
+```
+GET /api/weather/{city}
+```
+
+Example:
+
+```
+/api/weather/new-york
+```
+
+Returns live weather data from the external provider.
+
+---
+
+### Cached Weather
+
+```
+GET /api/weather/{city}/cached
+```
+
+Returns cached weather data when available.
+If no cached data exists, the API fetches live data and stores it in cache.
+
+---
+
+## Input Handling & Validation
+
+* City names are normalized (trimming whitespace, collapsing multiple spaces or hyphens, consistent casing).
+* Invalid input returns a validation error response.
+* City normalization is handled at the routing level before reaching the controller.
+
+---
+
+## Error Handling
+
+The API includes proper error handling for:
+
+* Invalid or malformed requests (HTTP 422)
+* Missing routes (HTTP 404)
+* External API failures with controlled error responses
+
+Internal exceptions are not exposed directly to the client.
+
+---
+
+## Automated Tests
+
+The project includes automated **feature tests** that cover:
+
+* Request validation and normalization
+* API response structure
+* Cached vs live weather behavior
+
+External API calls are mocked to keep tests deterministic and fast.
+
+### Run tests
+
+Run General Test
+
+```bash
+php artisan test
+```
+
+Run Weather Request Test
+
+```bash
+php artisan test --filter=WeatherRequestTest
+```
+
+Run Weather Response Test
+
+```bash
+php artisan test --filter=WeatherResponseTest
+```
+
+---
+
+## Implementation Notes
+
+* Laravel Form Requests are used for request validation.
+* City input is normalized and validated via a Form Request and consumed from validated data in the controller.
+* External API logic is isolated in a dedicated service/client layer.
+* Caching is implemented using Laravel’s cache abstraction.
+* Tests focus on observable behavior rather than internal implementation details.
+
+---
+
+## Step by Step Development Approach
+
+* Set up the Laravel project and its necessary files.
+* Added OpenWeather API configuration to the application config files.
+* Created a Weather domain object to represent an immutable weather snapshot for a city and format the data into a consistent API response.
+* Created an OpenWeather client to handle OpenWeather API operations separately from the Weather service.
+* Created a Weather service to separate business logic from the Weather controller.
+* Implemented caching in the Weather service.
+* Created a Weather request to handle validation before the request is processed by the controller.
+* Ensured controllers remain slim and focused only on orchestration.
+* Added route limiting to the API routes to protect them from request abuse.
+* Created Weather request tests to ensure requests reaching the endpoints are handled correctly.
+* Created Weather response tests to ensure responses returned by the endpoints are accurate.

@@ -10,6 +10,8 @@ use App\Domain\Weather;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Cache;
 
+use App\Exceptions\CityNotFoundException;
+
 class WeatherResponseTest extends TestCase
 {
     protected function setUp(): void {
@@ -76,6 +78,26 @@ class WeatherResponseTest extends TestCase
             ->assertJson([
                 'city' => 'New York',
                 'source' => 'cache',
+            ]);
+    }
+
+    #[Test]
+    public function it_returns_error_when_city_does_not_exist()
+    {
+        $this->mock(OpenWeatherClient::class, function ($mock) {
+            $mock->shouldReceive('fetchByCity')
+                ->once()
+                ->with('Atlantis')
+                ->andThrow(new CityNotFoundException());
+        });
+
+        $response = $this->getJson('/api/weather/atlantis');
+
+        $response
+            ->assertStatus(404)
+            ->assertJson([
+                'message' => 'City not found',
+                'code' => 'WEATHER_CITY_NOT_FOUND',
             ]);
     }
 }
